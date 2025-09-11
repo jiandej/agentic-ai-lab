@@ -1,29 +1,17 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from encoder_decoder_attention_pytorch import Attention
 
 class MaskedSelfAttention(nn.Module):
 
-    def __init__(self, d_model=2, row_dim=0, col_dim=1):
+    def __init__(self, d_model=2, row_dim=0, col_dim=1, num_heads=1):
         super().__init__()
 
-        self.W_q = nn.Linear(
-            in_features=d_model,
-            out_features=d_model,
-            bias=False
+        self.heads = nn.ModuleList(
+            [Attention(d_model, row_dim, col_dim) for _ in range(num_heads)]
         )
-        self.W_k = nn.Linear(
-            in_features=d_model,
-            out_features=d_model,
-            bias=False
-        )
-        self.W_v = nn.Linear(
-            in_features=d_model,
-            out_features=d_model,
-            bias=False
-        )
-
-        self.row_dim = row_dim
+        
         self.col_dim = col_dim
 
     # mask is a matrix with true/false
